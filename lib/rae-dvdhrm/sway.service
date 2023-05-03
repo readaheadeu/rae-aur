@@ -1,0 +1,5 @@
+[Service]
+ExecStart=/usr/bin/sway
+ExecStopPost=/usr/bin/systemctl --user unset-environment DISPLAY I3SOCK SWAYSOCK WAYLAND_DISPLAY
+NotifyAccess=all
+Type=notify

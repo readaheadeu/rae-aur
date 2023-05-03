@@ -1,0 +1,180 @@
+name: "Build Package Repository"
+
+on:
+  pull_request_target:
+    branches: [ "main" ]
+  push:
+    branches: [ "main", "wip/**" ]
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  #
+  # Job Configuration
+  #
+  # This checks the workflow parameters and prepares the data for the following
+  # build jobs. This allows distributing the build across multiple jobs.
+  #
+  config:
+    name: "Job Configuration"
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+
+    outputs:
+      deploy: ${{ steps.parameters.outputs.deploy }}
+      now: ${{ steps.parameters.outputs.now }}
+      packages: ${{ steps.list.outputs.packages }}
+      ref: ${{ steps.parameters.outputs.ref }}
+
+    steps:
+    - name: "Determine Build Parameters"
+      id: parameters
+      env:
+        CTX_GITHUB_EVENT_NAME: ${{ github.event_name }}
+        X_DEPLOY: "no"
+        X_HEAD_REF: ${{ github.head_ref }}
+        X_REF: ${{ github.ref }}
+      run: |
+        if [[ "${CTX_GITHUB_EVENT_NAME}" = "pull_request_target" ]] ; then
+          X_REF="${X_HEAD_REF}"
+        elif [[ "${CTX_GITHUB_EVENT_NAME}" = "workflow_dispatch" ]] ; then
+          X_DEPLOY="yes"
+        fi
+
+        echo "deploy=${X_DEPLOY}" >>$GITHUB_OUTPUT
+        echo "now=$(date -u '+%Y%m%d%H%M')" >>$GITHUB_OUTPUT
+        echo "ref=${X_REF}" >>$GITHUB_OUTPUT
+
+    - name: "Fetch Sources"
+      uses: actions/checkout@v3
+      with:
+        path: "./src"
+        ref: ${{ steps.parameters.outputs.ref }}
+
+    - name: "Determine Package List"
+      id: list
+      run: echo "packages=$(ls ./src/lib | jq -R . | jq -ces .)" >>$GITHUB_OUTPUT
+
+    - name: "Print Parameters"
+      env:
+        CTX_STEPS_LIST_OUTPUTS_PACKAGES: ${{ steps.list.outputs.packages }}
+        CTX_STEPS_PARAMETERS_OUTPUTS_DEPLOY: ${{ steps.parameters.outputs.deploy }}
+        CTX_STEPS_PARAMETERS_OUTPUTS_NOW: ${{ steps.parameters.outputs.now }}
+        CTX_STEPS_PARAMETERS_OUTPUTS_REF: ${{ steps.parameters.outputs.ref }}
+      run: |
+        echo "Deploy: ${CTX_STEPS_PARAMETERS_OUTPUTS_DEPLOY}"
+        echo "Now: ${CTX_STEPS_PARAMETERS_OUTPUTS_NOW}"
+        echo "Packages:"
+        echo "${CTX_STEPS_LIST_OUTPUTS_PACKAGES}" | jq .
+        echo "End of Packages"
+        echo "Ref: ${CTX_STEPS_PARAMETERS_OUTPUTS_REF}"
+
+  #
+  # Build Packages
+  #
+  # This job runs once per package. It uses an Arch Linux container to build
+  # each individual package and then uploads all artifacts.
+  #
+  makepkg:
+    name: "Makepkg - ${{ matrix.pkg }}"
+    needs: config
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        pkg: ${{ fromJson(needs.config.outputs.packages) }}
+
+    steps:
+    - name: "Fetch Sources"
+      uses: actions/checkout@v3
+      with:
+        path: "./src"
+        ref: ${{ needs.config.outputs.ref }}
+
+    - name: "Prepare Environment"
+      run: mkdir -p "./build/${{ matrix.pkg }}"
+
+    - name: "Build Package"
+      uses: "docker://ghcr.io/readaheadeu/rae-aur-ci:latest"
+      with:
+        entrypoint: "/rae/util/buildpkg.sh"
+        args: "\"./build/${{ matrix.pkg }}\" \"./src/lib/${{ matrix.pkg }}\" --nodeps"
+
+    - name: "Upload Artifacts"
+      uses: actions/upload-artifact@v3
+      with:
+        name: "pkg-${{ matrix.pkg }}"
+        path: "./build/${{ matrix.pkg }}"
+
+  #
+  # Build Package Repository
+  #
+  # This waits for all package builds to finish, fetches all uploaded artifacts
+  # and assembles an Arch Linux package repository. This artifact is then
+  # uploaded again.
+  #
+  # Additionally, the final repository is pushed as a branch to the git
+  # repository, and thus can be sourced from pacman as repository. A periodic
+  # cleanup routine should delete old branches.
+  # Note that these branches are created as "git-orphans", so they do not mess
+  # with the history of the development branches.
+  #
+  makerepo:
+    name: "Makerepo"
+    needs: [ makepkg, config ]
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: "Fetch Sources"
+      uses: actions/checkout@v3
+
+    - name: "Prepare Environment"
+      run: mkdir -p "./build/artifacts"
+
+    - name: "Fetch Artifacts"
+      uses: actions/download-artifact@v3
+      with:
+        path: "./build/artifacts"
+
+    - name: "Build Package Repository"
+      uses: "docker://ghcr.io/readaheadeu/rae-aur-ci:latest"
+      with:
+        entrypoint: "/rae/util/buildrepo.sh"
+        args: "./build ./build/artifacts"
+
+    - name: "Upload Artifact"
+      uses: actions/upload-artifact@v3
+      with:
+        name: "repo"
+        path: "./build/repo"
+
+    - name: "Deploy Branch"
+      env:
+        X_DEPLOY: ${{ needs.config.outputs.deploy }}
+        X_NOW: ${{ needs.config.outputs.now }}
+        X_REF_NAME: ${{ github.ref_name }}
+      run: |
+        if [[ "${X_DEPLOY}" == "yes" ]] ; then
+          X_ID="repo-${X_REF_NAME}"
+        else
+          X_ID="repo-snapshot-${X_NOW}"
+        fi
+
+        git config --global user.name "Automation Bot"
+        git config --global user.email "bot@readahead.eu"
+        git checkout --orphan "${X_ID}"
+        git rm -rf .
+        git add ./build/repo
+        git commit -m "Deploy package repository"
+        git push origin +"${X_ID}"
