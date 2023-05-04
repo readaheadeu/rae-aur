@@ -9,15 +9,7 @@ arch=("any")
 license=("Apache")
 url="https://github.com/readaheadeu/rae-aur"
 
-source=(
-        "sway.service"
-)
-
-sha256sums=(
-        "SKIP"
-)
-
 package() {
         mkdir -p "$pkgdir/usr/lib/systemd/user"
-        cp "$srcdir/sway.service" "$pkgdir/usr/lib/systemd/user/"
+        cp "$startdir/files/sway.service" "$pkgdir/usr/lib/systemd/user/"
 }
