@@ -161,7 +161,7 @@ jobs:
       uses: "docker://ghcr.io/readaheadeu/rae-aur-ci:latest"
       with:
         entrypoint: "/rae/util/buildrepo.sh"
-        args: "./build ./build/artifacts"
+        args: "rae-aur ./build ./build/artifacts"
 
     - name: "Upload Artifact"
       uses: actions/upload-artifact@v3
