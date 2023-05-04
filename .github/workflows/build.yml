@@ -98,14 +98,24 @@ jobs:
         path: "./src"
         ref: ${{ needs.config.outputs.ref }}
 
-    - name: "Prepare Environment"
-      run: mkdir -p "./build/${{ matrix.pkg }}"
+    - id: prepare
+      name: "Prepare Environment"
+      env:
+        X_PKG: ${{ matrix.pkg }}
+      run: |
+        mkdir -p "./build/${X_PKG}"
+
+        X_ARGS=""
+        if [[ -f "./src/lib/${X_PKG}/PKGBUILD.args" ]] ; then
+          X_ARGS="$(cat "./src/lib/${X_PKG}/PKGBUILD.args")"
+        fi
+        echo "args=${X_ARGS}" >>$GITHUB_OUTPUT
 
     - name: "Build Package"
       uses: "docker://ghcr.io/readaheadeu/rae-aur-ci:latest"
       with:
         entrypoint: "/rae/util/buildpkg.sh"
-        args: "\"./build/${{ matrix.pkg }}\" \"./src/lib/${{ matrix.pkg }}\" --nodeps"
+        args: "\"./build/${{ matrix.pkg }}\" \"./src/lib/${{ matrix.pkg }}\" ${{ steps.prepare.outputs.args }}"
 
     - name: "Upload Artifacts"
       uses: actions/upload-artifact@v3
