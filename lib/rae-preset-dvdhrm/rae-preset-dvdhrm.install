@@ -1,0 +1,9 @@
+post_install() {
+        systemctl enable NetworkManager
+        systemctl enable systemd-resolved
+        systemctl enable systemd-timesyncd
+}
+
+post_upgrade() {
+        post_install
+}

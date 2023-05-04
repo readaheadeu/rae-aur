@@ -1,0 +1,12 @@
+# Maintainer: David Rheinsberg <david@readahead.eu>
+
+pkgname="rae-preset-dvdhrm"
+pkgdesc="Personal Presets of dvdhrm"
+pkgver=1.0.0
+pkgrel=1
+
+arch=("any")
+license=("Apache")
+url="https://github.com/readaheadeu/rae-aur"
+
+install="rae-preset-dvdhrm.install"
