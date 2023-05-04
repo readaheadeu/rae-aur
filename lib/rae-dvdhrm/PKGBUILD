@@ -10,6 +10,25 @@ license=("Apache")
 url="https://github.com/readaheadeu/rae-aur"
 
 package() {
-        mkdir -p "$pkgdir/usr/lib/systemd/user"
-        cp "$startdir/files/sway.service" "$pkgdir/usr/lib/systemd/user/"
+        install -m755 -DT \
+                "$startdir/files/etc.bash.custom" \
+                "$pkgdir/etc/bash.custom"
+        install -m644 -DT \
+                "$startdir/files/etc-environment-d.50-editor-vim.conf" \
+                "$pkgdir/etc/environment.d/50-editor-vim.conf"
+        install -m644 -DT \
+                "$startdir/files/etc-environment-d.50-firefox-wayland.conf" \
+                "$pkgdir/etc/environment.d/50-firefox-wayland.conf"
+        install -m644 -DT \
+                "$startdir/files/etc-profile-d.sway.sh" \
+                "$pkgdir/etc/profile.d/sway.sh"
+        install -m644 -DT \
+                "$startdir/files/etc-systemd-system-getty-tty1-service-d.autologin.conf" \
+                "$pkgdir/etc/systemd/system/getty@tty1.service.d/autologin.conf"
+        install -m644 -DT \
+                "$startdir/files/etc-systemd-user.sway.service" \
+                "$pkgdir/etc/systemd/user/sway.service"
+        install -m755 -DT \
+                "$startdir/files/etc-systemd-user-environment-generators.50-ssh-auth-sock.sh" \
+                "$pkgdir/etc/systemd/user-environment-generators/50-ssh-auth-sock.sh"
 }
