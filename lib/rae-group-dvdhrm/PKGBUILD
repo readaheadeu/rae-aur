@@ -1,0 +1,79 @@
+# Maintainer: David Rheinsberg <david@readahead.eu>
+
+pkgname="rae-group-dvdhrm"
+pkgdesc="Virtual Package Group of dvdhrm"
+pkgver=1.0.0
+pkgrel=1
+
+arch=("any")
+license=("Apache")
+url="https://github.com/readaheadeu/rae-aur"
+
+depends=(
+        # CLI
+        'ack'
+        'htop'
+        'man-db'
+        'man-pages'
+        'rsync'
+        'sudo'
+        'tree'
+        'unzip'
+        'which'
+
+        # Dev
+        'clang'
+        'docker'
+        'fakeroot'
+        'git'
+        'github-cli'
+        'jq'
+        'meson'
+        'perl-authen-sasl'
+        'perl-mime-tools'
+        'perl-net-smtp-ssl'
+        'python-docutils'
+        'rustup'
+        'valgrind'
+        'vim'
+        'vim-editorconfig'
+
+        # Desktop
+        'alacritty'
+        'dunst'
+        'feh'
+        'firefox'
+        'gnome-keyring'
+        'gnome-screenshot'
+        'nextcloud-client'
+        'otf-font-awesome'
+        'pavucontrol'
+        'sway'
+        'swaybg'
+        'swaylock'
+        'ttf-dejavu'
+        'waybar'
+        'wireplumber'
+        'wofi'
+        'xdg-desktop-portal-gtk'
+        'xdg-desktop-portal-wlr'
+        'xorg-xwayland'
+        'zathura'
+        'zathura-pdf-poppler'
+
+        # Hardware
+        'bolt'
+        'fwupd'
+        'intel-ucode'
+        'iwd'
+        'networkmanager'
+        'networkmanager-openvpn'
+        'pipewire'
+        'pipewire-alsa'
+        'pipewire-pulse'
+
+        # System
+        'base'
+        'flatpak'
+        'openssh'
+)
