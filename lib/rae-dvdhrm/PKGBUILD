@@ -20,6 +20,15 @@ package() {
                 "$startdir/files/etc-environment-d.50-firefox-wayland.conf" \
                 "$pkgdir/etc/environment.d/50-firefox-wayland.conf"
         install -m644 -DT \
+                "$startdir/files/etc-environment-d.50-path.conf" \
+                "$pkgdir/etc/environment.d/50-path.conf"
+        install -m644 -DT \
+                "$startdir/files/etc-networkmanager-conf-d.dns.conf" \
+                "$pkgdir/etc/NetworkManager/conf.d/dns.conf"
+        install -m644 -DT \
+                "$startdir/files/etc-networkmanager-conf-d.wifi.conf" \
+                "$pkgdir/etc/NetworkManager/conf.d/wifi.conf"
+        install -m644 -DT \
                 "$startdir/files/etc-profile-d.sway.sh" \
                 "$pkgdir/etc/profile.d/sway.sh"
         install -m644 -DT \
