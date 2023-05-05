@@ -1,0 +1,13 @@
+[Unit]
+Description=Nextcloud Desktop Client
+BindsTo=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStartPre=/bin/sleep 4
+ExecStart=/usr/bin/nextcloud --background
+Restart=on-failure
+RestartSec=1s
+
+[Install]
+WantedBy=graphical-session.target
