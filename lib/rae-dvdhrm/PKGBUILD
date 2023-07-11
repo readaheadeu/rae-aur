@@ -46,4 +46,7 @@ package() {
         install -m755 -DT \
                 "$startdir/files/etc-systemd-user-environment-generators.50-ssh-auth-sock.sh" \
                 "$pkgdir/etc/systemd/user-environment-generators/50-ssh-auth-sock.sh"
+        install -m644 -DT \
+                "$startdir/files/usr-share-dvdhrm-images.background.jpg" \
+                "$pkgdir/usr/share/dvdhrm/images/background.jpg"
 }
