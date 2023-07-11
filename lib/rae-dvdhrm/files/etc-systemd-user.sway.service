@@ -7,7 +7,7 @@ RefuseManualStop=yes
 
 [Service]
 Environment=XDG_CURRENT_DESKTOP=sway
-ExecStart=/usr/bin/sway
+ExecStart=/usr/bin/env --unset=NOTIFY_SOCKET SWAY_NOTIFY_SOCKET=${NOTIFY_SOCKET} /usr/bin/sway
 ExecStopPost=/usr/bin/systemctl --user unset-environment DISPLAY SWAYSOCK WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 NotifyAccess=all
 Type=notify
