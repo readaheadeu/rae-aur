@@ -1,0 +1,13 @@
+[Unit]
+Description=pCloud Client
+BindsTo=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStartPre=/bin/sleep 4
+ExecStart=/usr/bin/pcloud
+Restart=on-failure
+RestartSec=4s
+
+[Install]
+WantedBy=graphical-session.target

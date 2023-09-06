@@ -38,6 +38,9 @@ package() {
                 "$startdir/files/etc-systemd-user.nextcloud-client.service" \
                 "$pkgdir/etc/systemd/user/nextcloud-client.service"
         install -m644 -DT \
+                "$startdir/files/etc-systemd-user.pcloud.service" \
+                "$pkgdir/etc/systemd/user/pcloud.service"
+        install -m644 -DT \
                 "$startdir/files/etc-systemd-user.sway.service" \
                 "$pkgdir/etc/systemd/user/sway.service"
         install -m644 -DT \
