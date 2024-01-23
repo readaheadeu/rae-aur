@@ -48,7 +48,6 @@ depends=(
         'firefox'
         'gnome-keyring'
         'gnome-screenshot'
-        'nextcloud-client'
         'otf-font-awesome'
         'pavucontrol'
         'sway'
