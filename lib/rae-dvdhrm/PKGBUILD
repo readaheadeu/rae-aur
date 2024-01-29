@@ -2,7 +2,7 @@
 
 pkgname="rae-dvdhrm"
 pkgdesc="Personal Package of dvdhrm"
-pkgver=1.0.0
+pkgver=2.0.0
 pkgrel=1
 
 arch=("any")
