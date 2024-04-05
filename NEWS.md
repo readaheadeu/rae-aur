@@ -1,4 +1,4 @@
-# rae-aur - Readahead.eu Arch Linux User Repository
+# rae-aur - Readahead Arch Linux User Repository
 
 ## CHANGES WITH 1.0.0:
 
