@@ -50,7 +50,7 @@ jobs:
         echo "ref=${X_REF}" >>$GITHUB_OUTPUT
 
     - name: "Fetch Sources"
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         path: "./src"
         ref: ${{ steps.parameters.outputs.ref }}
@@ -93,7 +93,7 @@ jobs:
 
     steps:
     - name: "Fetch Sources"
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         path: "./src"
         ref: ${{ needs.config.outputs.ref }}
@@ -147,7 +147,7 @@ jobs:
 
     steps:
     - name: "Fetch Sources"
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
 
     - name: "Prepare Environment"
       run: mkdir -p "./build/artifacts"
