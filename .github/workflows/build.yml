@@ -118,7 +118,7 @@ jobs:
         args: "\"./build/${{ matrix.pkg }}\" \"./src/lib/${{ matrix.pkg }}\" ${{ steps.prepare.outputs.args }}"
 
     - name: "Upload Artifacts"
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v7
       with:
         name: "pkg-${{ matrix.pkg }}"
         path: "./build/${{ matrix.pkg }}"
@@ -153,7 +153,7 @@ jobs:
       run: mkdir -p "./build/artifacts"
 
     - name: "Fetch Artifacts"
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v8
       with:
         path: "./build/artifacts"
 
@@ -164,7 +164,7 @@ jobs:
         args: "rae-aur ./build ./build/artifacts"
 
     - name: "Upload Artifact"
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v7
       with:
         name: "repo"
         path: "./build/repo"
